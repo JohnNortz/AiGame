@@ -16,6 +16,7 @@ public class MovementDialScript : MonoBehaviour {
     public Color quater_3_color;
     public Color quater_4_color;
     public Color off_color;
+    public Vector3 start_pos;
 
     public Text set_text;
 
@@ -84,8 +85,8 @@ public class MovementDialScript : MonoBehaviour {
     
     public void UpdateDirective(string tile) {
 
-        var x = int.Parse("" + tile[0]);
-        var z = int.Parse("" + tile[2]);
+        x = int.Parse("" + tile[0]);
+        z = int.Parse("" + tile[2]);
 
         DIR.grid = new Vector3(x, 0, z);
         SetText();
@@ -104,6 +105,46 @@ public class MovementDialScript : MonoBehaviour {
         DIR.leash = ammount;
         SetText();
 
+    }
+
+    public void UpdateStartPosition(int pos)
+    {
+        var transfer = asker.GetComponent<SquadSetupScript>();
+        switch (pos)
+        {
+            case 1:
+                start_pos = new Vector3(1.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(1.5f, 0, 1.5f);
+                break;
+            case 2:
+                start_pos = new Vector3(4.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(4.5f, 0, 1.5f);
+                break;
+            case 3:
+                start_pos = new Vector3(7.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(7.5f, 0, 1.5f);
+                break;
+            case 4:
+                start_pos = new Vector3(10.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(10.5f, 0, 1.5f);
+                break;
+            case 5:
+                start_pos = new Vector3(13.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(13.5f, 0, 1.5f);
+                break;
+            case 6:
+                start_pos = new Vector3(16.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(16.5f, 0, 1.5f);
+                break;
+            case 7:
+                start_pos = new Vector3(19.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(19.5f, 0, 1.5f);
+                break;
+            case 8:
+                start_pos = new Vector3(22.5f, 0, 1.5f);
+                transfer.starting_position = new Vector3(22.5f, 0, 1.5f);
+                break;
+        }
     }
 
     public void UpdateDirectiveType(int type)

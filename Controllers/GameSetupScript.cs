@@ -41,11 +41,6 @@ public class GameSetupScript : MonoBehaviour
             grid_lines.SetPosition(count + 1 + i * 3, new Vector3(map_size * 3, -1.5f, i * 3));
             grid_lines.SetPosition(count + 2 + i * 3, new Vector3(0, -1.5f, i * 3));
         }
-
-        foreach (GameObject squad in squads)
-        {
-            squad.GetComponent<SquadControlScript>().UpdateDirectives();
-        }
     }
 
     void ResetTimers()
@@ -65,13 +60,13 @@ public class GameSetupScript : MonoBehaviour
         quarter_timer += Time.deltaTime;
         quarter_quarter_timer += Time.deltaTime;
 
-        if (quarter_timer > 80)
+        if (quarter_timer > 40)
         {
             foreach (GameObject squad in squads) { if (squad != null) squad.GetComponent<SquadControlScript>().UpdateDirectives(); }
             quarter_timer = 0;
             quarter_quarter_timer = 0;
         }
-        if (quarter_quarter_timer > 20)
+        if (quarter_quarter_timer > 10)
         {
             foreach (GameObject squad in squads) {
                 if (squad != null) squad.GetComponent<SquadControlScript>().UpdateOrders();
@@ -82,6 +77,7 @@ public class GameSetupScript : MonoBehaviour
 
     public void GameStart()
     {
+        pause = false;
         foreach (GameObject squad in squads)
         {
             if (squad != null)
@@ -96,11 +92,16 @@ public class GameSetupScript : MonoBehaviour
         }
         foreach (GameObject squad in squads)
         {
+            if (squad != null) squad.GetComponent<SquadControlScript>().UpdateDirectives();
+        }
+        foreach (GameObject squad in squads)
+        {
             if (squad != null)
             {
                 squad.GetComponent<SquadControlScript>().UpdateOrders();
             }
         }
+
     }
 
     public void GetSquad(GameObject new_squad)

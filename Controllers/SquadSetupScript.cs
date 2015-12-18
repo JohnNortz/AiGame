@@ -7,7 +7,8 @@ public class SquadSetupScript : MonoBehaviour {
     public int team;
     public int squad_count;
 
-    public GameObject[] Ships;
+    public GameObject Ship;
+    public int ship_number;
     public Directive early_directive;
     public Vector3 early_grid;
     public Directive middle_directive;
@@ -20,8 +21,9 @@ public class SquadSetupScript : MonoBehaviour {
 
     public GameObject squad_command_object;
     public SquadControlScript squad_s;
+    public GameObject SquadSetupPanel;
 
-    public int pre_ship_cost;
+    public int per_ship_cost;
     public int squad_cost;
     public int squad_games;
     public int squad_wins;
@@ -41,7 +43,6 @@ public class SquadSetupScript : MonoBehaviour {
     void Start () {
         squad_command_object = Instantiate(squad_controller_prefab, transform.position, Quaternion.identity) as GameObject;
         squad_s = squad_command_object.GetComponent<SquadControlScript>();
-        Ships = new GameObject[6];
         end_directive = gameObject.AddComponent<Directive>() as Directive;
         middle_directive = gameObject.AddComponent<Directive>() as Directive;
         early_directive = gameObject.AddComponent<Directive>() as Directive;
@@ -77,7 +78,15 @@ public class SquadSetupScript : MonoBehaviour {
         early_grid = early_directive.grid;
         middle_grid = middle_directive.grid;
 
-}
+    }
+
+    public void click_setup()
+    {
+        var SetUp = Instantiate(SquadSetupPanel, transform.localPosition, Quaternion.identity) as GameObject;
+        var SetUpScript = SetUp.GetComponent<SquadEditPanelScript>();
+        SetUpScript.asker = this.gameObject;
+
+    }
 
     public void UpdateController()
     {
@@ -103,7 +112,8 @@ public class SquadSetupScript : MonoBehaviour {
         squad_s.end_directive.directive_type = end_directive.directive_type;
         squad_s.end_directive.leash = end_directive.leash;
 
-
+        squad_s.ship_number = ship_number;
+        squad_s.ship_prefab = Ship;
         
         Debug.Log("Finished Updating Controller");
     }

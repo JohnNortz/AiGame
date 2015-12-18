@@ -68,6 +68,8 @@ public class ShipScript : MonoBehaviour {
     // Use this for initialization
     void Start() {
         orders = gameObject.AddComponent<Directive>() as Directive;
+        orders.grid = squad.early_directive.grid;
+        Debug.Log("orders: " + orders.grid);
         _turn_speed = turn_speed;
         directive = order_directive;
         behavior_timer = 0;
@@ -179,9 +181,16 @@ public class ShipScript : MonoBehaviour {
                 {
                     heading_vector = target_vector;
                 }
+                orders = null;
+                order_grid = Vector3.zero;
                 leash_distance = 0;
                 if (distance_to_target < .05f) Ram();
                 move_speed += .04f * Time.deltaTime;
+                var rotateM = Quaternion.LookRotation(heading_vector - transform.position);
+                var angleM = Quaternion.Angle(transform.rotation, rotateM);
+                float timeToCompleteM = angleM / (turn_speed);
+                float donePercentageM = Mathf.Min(1F, Time.deltaTime / (timeToCompleteM));
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotateM, donePercentageM);
                 speed = move_speed;
                 break;
             case "dead":
@@ -204,6 +213,8 @@ public class ShipScript : MonoBehaviour {
         if (behavior_timer < 0 && !dead) BehaviorSwitch();
         //Debug.DrawLine(this.transform.position, (grid * 3 + new Vector3(1.5f, 0, 1.5f)), white);
         Debug.DrawLine(this.transform.position, heading_vector, Color.yellow);
+        Debug.DrawLine(this.transform.position, order_vector, Color.blue);
+
 
         //Debug.DrawLine((origin * 3) + (Vector3.up * .3f) + new Vector3(1.5f, 0, 1.5f), (origin * 3) + new Vector3(1.5f, 0, 1.5f) - (Vector3.up * .3f), Color.white);
         //if (near_side)
@@ -334,21 +345,20 @@ public class ShipScript : MonoBehaviour {
     {
         if (!dead)
         {
-            set_leash = orders.leash;
             set_directive_type = orders.directive_type;
             set_grid_height = orders.grid_height;
             set_grid = new Vector3(orders.grid.x, orders.grid_height, orders.grid.z);
-            if (near_side) { order_grid = set_grid; }
+            if (near_side) { order_grid = set_grid - new Vector3(-1, 0, -1); }
             else { order_grid = new Vector3(8 - set_grid.x, order_grid_height, 8 - set_grid.z); }
 
             order_directive = set_directive_type;
-            leash_distance = set_leash;
+            leash_distance = orders.leash;
 
             Vector3 ord = order_grid * 3;
 
             if (ord.y > 4.5f) ord.y = 4.5f;
             if (ord.y < -4.5f) ord.y = -4.5f;
-            order_vector = ord + new Vector3(.5f, 0, .5f) + new Vector3((Random.Range(-.3f, .3f)), (Random.Range(-.3f, .3f)), (Random.Range(-.3f, .3f)));
+            order_vector = ord + new Vector3(1.5f, 0, 1.5f) + new Vector3((Random.Range(-.3f, .3f)), (Random.Range(-.3f, .3f)), (Random.Range(-.3f, .3f)));
         }
     }
 
