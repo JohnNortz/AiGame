@@ -64,7 +64,7 @@ public class GunScript : MonoBehaviour {
             }
 
 
-            range_timer = range_time + (Random.Range(-.3f, .3f));
+            range_timer = range_time + (Random.Range(0f, .7f));
             var _ships = GameObject.FindGameObjectsWithTag("Ship");
             get_once = true;
             int _count = 0;

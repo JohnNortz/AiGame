@@ -41,6 +41,7 @@ public class ShipButtonScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (Ship == null) Destroy(this.gameObject);
         this.transform.position = Ship.transform.position;
         var x = Vector3.Distance(Ship.transform.position, Cam.transform.position) * .02f;
         thisRect.transform.localScale = new Vector3(x, x, 1);

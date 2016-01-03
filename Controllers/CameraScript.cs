@@ -24,8 +24,8 @@ public class CameraScript : MonoBehaviour {
 
     float xSpeed = 175.0F;
     float ySpeed = 175.0F;
-    int yMinLimit = -40; //Lowest vertical angle in respect with the target.
-    int yMaxLimit = 40;
+    int yMinLimit = -80; //Lowest vertical angle in respect with the target.
+    int yMaxLimit = 80;
     float minDistance = .1f; //Min distance of the camera from the target
     int maxDistance = 30;
     private float x = 0.0F;
@@ -34,6 +34,8 @@ public class CameraScript : MonoBehaviour {
     public float waitTime;
     public Canvas canvas;
     public GameObject Target;
+    public bool free = false;
+    public bool locked = false;
     
     // Use this for initialization
 	void Start () {
@@ -63,31 +65,49 @@ public class CameraScript : MonoBehaviour {
                 }
             }
 
-           orbitDistance += Input.GetAxis("Mouse ScrollWheel") * orbitDistance;
-           orbitDistance = Mathf.Clamp(orbitDistance, minDistance, maxDistance);
-     
-           //Detect mouse drag;
-           if(Input.GetMouseButton(1))   
-           {
+            orbitDistance += Input.GetAxis("Mouse ScrollWheel") * orbitDistance;
+            orbitDistance = Mathf.Clamp(orbitDistance, minDistance, maxDistance);
+
+            //Detect mouse drag;
+            if (Input.GetMouseButton(1))
+            {
                 x += Input.GetAxis("Mouse X") * xSpeed * 0.02F;
-                y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02F;      
-           }
-       
-           y = ClampAngle(y, yMinLimit, yMaxLimit);
-                 
-           Quaternion rotation = Quaternion.Euler(y, x, 0);
-           var position2 = rotation * new Vector3(0f, 0f, -orbitDistance) + Target.transform.position;
+                y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02F;
+            }
 
-           transform.position = Vector3.Slerp(transform.position, position2, orbitCameraSpeed * Time.deltaTime);
-           transform.rotation = rotation;      
-    
-           //transform.position = Target.transform.position + ChaseOffset;
+            y = ClampAngle(y, yMinLimit, yMaxLimit);
+            var LRotation = transform.rotation;
+            Quaternion rotation = Quaternion.Euler(y, x, 0);
+            if (!free && Target.tag == "Ship")
+            {
+                if (Target.GetComponent<ShipScript>().target_obj != null && Target.tag != "Dead")
+                {
+                    var lookPos = Target.GetComponent<ShipScript>().target_obj.transform.position - transform.position;
+                    LRotation = Quaternion.LookRotation(lookPos);
+                }
+                else
+                {
+                    free = true;
+                }
+            }
+            var position2 = rotation * new Vector3(0f, 0f, -orbitDistance) + Target.transform.position;
 
-           var lookPos = Target.transform.position - transform.position;
-           var LRotation = Quaternion.LookRotation(lookPos);
-           transform.rotation = Quaternion.Slerp(transform.rotation, LRotation, Time.deltaTime * 15);
+            transform.position = Vector3.Slerp(transform.position, position2, orbitCameraSpeed * Time.deltaTime);
+
+            //tranvar lookPossform.position = Target.transform.position + ChaseOffset;
+            if (free)
+            {
+                var lookPos = Target.transform.position - transform.position;
+                LRotation = Quaternion.LookRotation(lookPos);
+            }
+            transform.rotation = Quaternion.Slerp(transform.rotation, LRotation, Time.deltaTime * 10);
         }
 
+    }
+
+    public void CameraTarget()
+    {
+        free = false;
     }
 
     static float ClampAngle(float angle, float min, float max)

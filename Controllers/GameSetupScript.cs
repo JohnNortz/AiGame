@@ -5,6 +5,7 @@ public class GameSetupScript : MonoBehaviour
 {
 
     public float map_size;
+    public int scale;
     public float player_number;
     public GameObject[] players;
     public LineRenderer grid_lines;
@@ -17,37 +18,49 @@ public class GameSetupScript : MonoBehaviour
     private bool start = false;
     public int squad_count = 2;
 
+    private Vector3 camera_start;
+    private Quaternion camera_start_rot;
+    public GameObject header;
+
     public GameObject[] squads;
     public GameObject[] things_to_disable_on_start;
 
     // Use this for initialization
     void Start()
     {
+        camera_start = Camera.main.transform.position;
+        camera_start_rot = Camera.main.transform.rotation;
         var count = 0;
         for (int i = 0; i <= map_size + 1; i++)
         {
-            grid_lines.SetPosition((i * 3), new Vector3(i * 3, -1.5f, 0));
-            grid_lines.SetPosition(1 + (i * 3), new Vector3(i * 3, -1.5f, map_size * 3));
-            grid_lines.SetPosition(2 + (i * 3), new Vector3(i * 3, -1.5f, 0));
+            grid_lines.SetPosition((i * 3), new Vector3(i * scale, -scale * .5f, 0));
+            grid_lines.SetPosition(1 + (i * 3), new Vector3(i * scale, -scale * .5f, map_size * scale));
+            grid_lines.SetPosition(2 + (i * 3), new Vector3(i * scale, -scale * .5f, 0));
             count = i * 3;
         }
 
-        grid_lines.SetPosition(count, new Vector3(0, -1.5f, 0));
+        grid_lines.SetPosition(count, new Vector3(0, -scale * .5f, 0));
         count++;
 
         for (int i = 0; i <= map_size; i++)
         {
-            grid_lines.SetPosition(count + i * 3, new Vector3(0, -1.5f, i * 3));
-            grid_lines.SetPosition(count + 1 + i * 3, new Vector3(map_size * 3, -1.5f, i * 3));
-            grid_lines.SetPosition(count + 2 + i * 3, new Vector3(0, -1.5f, i * 3));
+            grid_lines.SetPosition(count + i * 3, new Vector3(0, -scale * .5f, i * scale));
+            grid_lines.SetPosition(count + 1 + i * 3, new Vector3(map_size * scale, -scale * .5f, i * scale));
+            grid_lines.SetPosition(count + 2 + i * 3, new Vector3(0, -scale * .5f, i * scale));
         }
     }
 
     void ResetTimers()
     {
+        pause_speed = .2f;
         game_timer = 0;
         quarter_quarter_timer = 0;
         quarter_timer = 0;
+    }
+
+    public void UpdateScores()
+    {
+        header.GetComponent<UIScoreHeaderScript>().UpdateScore();
     }
 
     // Update is called once per frame
@@ -60,7 +73,7 @@ public class GameSetupScript : MonoBehaviour
         quarter_timer += Time.deltaTime;
         quarter_quarter_timer += Time.deltaTime;
 
-        if (quarter_timer > 40)
+        if (quarter_timer > 60)
         {
             foreach (GameObject squad in squads) { if (squad != null) squad.GetComponent<SquadControlScript>().UpdateDirectives(); }
             quarter_timer = 0;
@@ -77,7 +90,10 @@ public class GameSetupScript : MonoBehaviour
 
     public void GameStart()
     {
+        Camera.main.transform.position = camera_start;
+        Camera.main.transform.rotation = camera_start_rot;
         pause = false;
+        ResetTimers();
         foreach (GameObject squad in squads)
         {
             if (squad != null)
@@ -85,7 +101,6 @@ public class GameSetupScript : MonoBehaviour
                 squad.GetComponent<SquadControlScript>().GoGoShipSpawn();
             }
         }
-        ResetTimers();
         foreach (GameObject thing in things_to_disable_on_start)
         {
             thing.gameObject.SetActive(false);
@@ -101,7 +116,35 @@ public class GameSetupScript : MonoBehaviour
                 squad.GetComponent<SquadControlScript>().UpdateOrders();
             }
         }
+        UpdateScores();
+    }
 
+    public void Pause()
+    {
+        pause_speed = .33f;
+        pause = !pause;
+    }
+
+    public void ResetGame()
+    {
+        var ships = GameObject.FindGameObjectsWithTag("Ship");
+        foreach (GameObject dude in ships)
+        {
+            Destroy(dude.gameObject);
+        }
+        var ships2 = GameObject.FindGameObjectsWithTag("Dead");
+        foreach (GameObject dude in ships2)
+        {
+            Destroy(dude.gameObject);
+        }
+        foreach (GameObject squad in squads)
+        {
+            if (squad != null)
+            {
+                squad.GetComponent<SquadControlScript>().ControllerReset();
+            }
+        }
+        GameStart();
     }
 
     public void GetSquad(GameObject new_squad)

@@ -25,8 +25,9 @@ public class ShipYCircleScript : MonoBehaviour
 
     void Update()
     {
-        line.SetWidth(.002f * Vector3.Distance(Camera.main.transform.position, ship.transform.position), .002f * Vector3.Distance(Camera.main.transform.position, ship.transform.position));
         if (ship == null) Destroy(this.gameObject);
+        line.SetWidth(.002f * Vector3.Distance(Camera.main.transform.position, ship.transform.position), .002f * Vector3.Distance(Camera.main.transform.position, ship.transform.position));
+        
         var grr = Color.grey;
         grr.a = .3f;
         if (ship.tag == "Dead") line.SetColors(grr, grr);
@@ -41,11 +42,11 @@ public class ShipYCircleScript : MonoBehaviour
 
         float x = 0f;
         float z = 0f;
-        float y = -3f;
+        float y = -4f;
 
         float angle = 2f;
 
-        line.SetPosition(0, new Vector3(x, ship.transform.position.y * 2f - .1f, z));
+        line.SetPosition(0, new Vector3(x, ((ship.transform.position.y) * 2f), z));
         line.SetPosition(1, new Vector3(x, y, z));
         for (int i = 2; i < (segments); i++)
         {

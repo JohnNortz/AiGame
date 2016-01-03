@@ -15,23 +15,39 @@ public class SquadEditPanelScript : MonoBehaviour {
     public GameObject Ship;
     public Text mods_cost;
     public Text total_cost;
+    public Text single_cost;
+    public Image ship_image;
+    public Text ship_full_name_text;
+    public Text hp_text;
+    public Text armor_text;
+    public Text speed_text;
+    public string squad_name;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         askerScript = asker.GetComponent<SquadSetupScript>();
         this.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 	}
 
     public void ship_choice_click (GameObject ship)
     {
+        var s = ship.GetComponent<ShipScript>();
         askerScript.Ship = ship;
-        Ship = ship;
+        Ship = ship;    
+        ship_image.sprite = s.ship_image; 
+        squad_name = "SquadNamePlaceholder";
+        ship_full_name_text.text = s.ship_full_name;
+        hp_text.text = s.hit_points.ToString();
+        armor_text.text = s.armored.ToString();
+        speed_text.text = s.move_speed.ToString();
     }
     public void ship_choice_click_plus (int cost)
     {
         ship_cost = cost;
         squad_cost = ship_number * ship_cost;
         total_cost.text = squad_cost.ToString();
+        single_cost.text = (squad_cost / ship_number).ToString();
+        askerScript.per_ship_cost = (squad_cost / ship_number);
     }
 	
     public void plus_ship()
@@ -54,7 +70,7 @@ public class SquadEditPanelScript : MonoBehaviour {
         squad_cost = ship_number * ship_cost;
         askerScript.squad_cost = squad_cost;
         askerScript.Ship = Ship;
-
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<TeamSetupScript>().UpdateCost();
         Destroy(this.gameObject);
     }
 }

@@ -41,7 +41,7 @@ public class SquadSetupScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        squad_command_object = Instantiate(squad_controller_prefab, transform.position, Quaternion.identity) as GameObject;
+        if (squad_command_object == null) squad_command_object = Instantiate(squad_controller_prefab, transform.position, Quaternion.identity) as GameObject;
         squad_s = squad_command_object.GetComponent<SquadControlScript>();
         end_directive = gameObject.AddComponent<Directive>() as Directive;
         middle_directive = gameObject.AddComponent<Directive>() as Directive;
@@ -52,31 +52,62 @@ public class SquadSetupScript : MonoBehaviour {
 	// Update is called once per frame
 	public void click_directive (int quarter) {
         var Dial = Instantiate(movementDial, transform.localPosition, Quaternion.identity) as GameObject;
-        var DialScript = Dial.GetComponent<MovementDialScript>();
-        DialScript.asker = this.gameObject;
-        DialScript.quarter = quarter;
-        switch (quarter)
+        if (Dial.GetComponent<MovementDialScript>() != null)
         {
-            case 1:
-                DialScript.DIR = early_directive;
-                break;
-            case 2:
-                DialScript.DIR = middle_directive;
-                break;
-            case 3:
-                DialScript.DIR = late_directive;
-                break;
-            case 4:
-                DialScript.DIR = end_directive;
-                break;
-        }
-        DialScript.DrawBoard();
-        Dial.GetComponent<RectTransform>().SetParent(this.transform.parent);
-        Dial.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-        Dial.GetComponent<RectTransform>().localPosition = new Vector3(this.transform.localPosition.x, this.transform.localPosition.y - 150, this.transform.localPosition.z);
+            var DialScript = Dial.GetComponent<MovementDialScript>();
+            DialScript.asker = this.gameObject;
+            DialScript.quarter = quarter;
+            switch (quarter)
+            {
+                case 1:
+                    DialScript.DIR = early_directive;
+                    break;
+                case 2:
+                    DialScript.DIR = middle_directive;
+                    break;
+                case 3:
+                    DialScript.DIR = late_directive;
+                    break;
+                case 4:
+                    DialScript.DIR = end_directive;
+                    break;
+            }
+            DialScript.DrawBoard();
+            Dial.GetComponent<RectTransform>().SetParent(this.transform.parent);
+            Dial.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            Dial.GetComponent<RectTransform>().localPosition = new Vector3(this.transform.localPosition.x, this.transform.localPosition.y - 150, this.transform.localPosition.z);
 
-        early_grid = early_directive.grid;
-        middle_grid = middle_directive.grid;
+            early_grid = early_directive.grid;
+            middle_grid = middle_directive.grid;
+        }
+        else if (Dial.GetComponent<MovementDialObejctiveScript>() != null)
+        {
+            var DialScript = Dial.GetComponent<MovementDialObejctiveScript>();
+            DialScript.asker = this.gameObject;
+            DialScript.quarter = quarter;
+            switch (quarter)
+            {
+                case 1:
+                    DialScript.DIR = early_directive;
+                    break;
+                case 2:
+                    DialScript.DIR = middle_directive;
+                    break;
+                case 3:
+                    DialScript.DIR = late_directive;
+                    break;
+                case 4:
+                    DialScript.DIR = end_directive;
+                    break;
+            }
+            DialScript.DrawBoard();
+            Dial.GetComponent<RectTransform>().SetParent(this.transform.parent);
+            Dial.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            Dial.GetComponent<RectTransform>().localPosition = new Vector3(this.transform.localPosition.x, this.transform.localPosition.y - 150, this.transform.localPosition.z);
+
+            early_grid = early_directive.grid;
+            middle_grid = middle_directive.grid;
+        }
 
     }
 
@@ -114,7 +145,10 @@ public class SquadSetupScript : MonoBehaviour {
 
         squad_s.ship_number = ship_number;
         squad_s.ship_prefab = Ship;
-        
+        squad_s.starting_position = starting_position;
+        squad_s.squad_count = squad_count;
+
+        squad_s.ship_worth = per_ship_cost;
         Debug.Log("Finished Updating Controller");
     }
 }

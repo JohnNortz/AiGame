@@ -9,7 +9,11 @@ public class SquadControlScript : MonoBehaviour {
     public Vector3 middle_grid;
     public Directive late_directive;
     public Directive end_directive;
-    public Directive end_over_directive; 
+    public Directive end_over_directive;
+    public Directive dir;
+    public Directive dir1;
+    public Directive dir2;
+    public Directive dir3;
     public float game_time;
     public GameSetupScript game;
     public int quarter = 0;
@@ -20,38 +24,41 @@ public class SquadControlScript : MonoBehaviour {
     public Vector3[] offsets;
     public int team;
     public int squad_count;
+    public int ship_worth;
 
-    private float warpTimer;
+    public float warpTimer;
     public float[] warpTimes;
-    private int warp_count = 0;
+    private float[] warpTimesOriginal;
+    public int warp_count = 0;
     public bool going = false;
 
     void Start()
     {
+        
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameSetupScript>();
         game.GetSquad(this.gameObject);
-        var dir = gameObject.AddComponent<Directive>() as Directive;
+        dir = gameObject.AddComponent<Directive>() as Directive;
         dir.grid = early_directive.grid;
         dir.grid_height = early_directive.grid_height;
         dir.leash = early_directive.leash;
         dir.directive_type = early_directive.directive_type;
         early_directive = dir;
 
-        var dir1 = gameObject.AddComponent<Directive>() as Directive;
+        dir1 = gameObject.AddComponent<Directive>() as Directive;
         dir1.grid = middle_directive.grid;
         dir1.grid_height = middle_directive.grid_height;
         dir1.leash = middle_directive.leash;
         dir1.directive_type = middle_directive.directive_type;
         middle_directive = dir1;
 
-        var dir2 = gameObject.AddComponent<Directive>() as Directive;
+        dir2 = gameObject.AddComponent<Directive>() as Directive;
         dir2.grid = late_directive.grid;
         dir2.grid_height = late_directive.grid_height;
         dir2.leash = late_directive.leash;
         dir2.directive_type = late_directive.directive_type;
         late_directive = dir2;
 
-        var dir3 = gameObject.AddComponent<Directive>() as Directive;
+        dir3 = gameObject.AddComponent<Directive>() as Directive;
         dir3.grid = end_directive.grid;
         dir3.grid_height = end_directive.grid_height;
         dir3.leash = end_directive.leash;
@@ -72,7 +79,8 @@ public class SquadControlScript : MonoBehaviour {
                     if (warpTimer > warp && warp != 0)
                     {
                         var ship = ships[warp_count];
-                        ship.transform.position = starting_position + offsets[warp_count];
+                        ship.transform.position = starting_position * GameObject.FindGameObjectWithTag("GameController").GetComponent<GameSetupScript>().scale + offsets[warp_count];
+                        ship.GetComponent<ShipScript>().DirectiveChange(early_directive.grid, early_directive.grid_height, early_directive.directive_type, early_directive.leash);
                         warp_count++;
                     }
                 }
@@ -80,36 +88,46 @@ public class SquadControlScript : MonoBehaviour {
         }
     }
 
+    public void UpdateScore()
+    {
+        game.UpdateScores();
+    }
+
+    public void ControllerReset()
+    {
+        Debug.Log("???????????????????????????????????");
+        quarter = 0;
+        warpTimer = 0;
+        warp_count = 0;
+        warpTimes = warpTimesOriginal;
+    }
+
     public void GoGoShipSpawn()
     {
 
-        var dir = gameObject.AddComponent<Directive>() as Directive;
+        dir = gameObject.AddComponent<Directive>() as Directive;
         dir.grid = early_directive.grid;
         dir.grid_height = early_directive.grid_height;
         dir.leash = early_directive.leash;
         dir.directive_type = early_directive.directive_type;
-        early_directive = dir;
 
-        var dir1 = gameObject.AddComponent<Directive>() as Directive;
+        dir1 = gameObject.AddComponent<Directive>() as Directive;
         dir1.grid = middle_directive.grid;
         dir1.grid_height = middle_directive.grid_height;
         dir1.leash = middle_directive.leash;
         dir1.directive_type = middle_directive.directive_type;
-        middle_directive = dir1;
 
-        var dir2 = gameObject.AddComponent<Directive>() as Directive;
+        dir2 = gameObject.AddComponent<Directive>() as Directive;
         dir2.grid = late_directive.grid;
         dir2.grid_height = late_directive.grid_height;
         dir2.leash = late_directive.leash;
         dir2.directive_type = late_directive.directive_type;
-        late_directive = dir2;
 
-        var dir3 = gameObject.AddComponent<Directive>() as Directive;
+        dir3 = gameObject.AddComponent<Directive>() as Directive;
         dir3.grid = end_directive.grid;
         dir3.grid_height = end_directive.grid_height;
         dir3.leash = end_directive.leash;
         dir3.directive_type = end_directive.directive_type;
-        end_directive = dir3;
 
         going = true;
         int count = 0;
@@ -135,8 +153,9 @@ public class SquadControlScript : MonoBehaviour {
         warpTimes = new float[temp.Length];
         for (int i = 0; i < temp.Length; i++)
         {
-            warpTimes[i] = 3f + Random.Range(-.5f, 3);
+            warpTimes[i] = 3f + Random.Range(0, 10);
         }
+        warpTimesOriginal = warpTimes;
     }
 
     public void UpdateOrders()

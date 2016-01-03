@@ -20,10 +20,10 @@ public class ProjectileScript : MonoBehaviour {
         var target_script = target.GetComponent<ShipScript>();
         var travel_distance = Vector3.Distance(this.transform.position, target.transform.position);
         var travel_time = (travel_distance / projectile_velocity);
-        firing_vector = target.transform.position + (target_script.heading * target_script.move_speed * travel_time);
+        firing_vector = target.transform.position + (target_script.heading * target_script.speed_real * travel_time);
         travel_distance = Vector3.Distance(this.transform.position, target.transform.position);
         travel_time = (travel_distance / projectile_velocity);
-        firing_vector = target.transform.position + (target_script.heading * target_script.move_speed * travel_time);
+        firing_vector = target.transform.position + (target_script.heading * target_script.speed_real * travel_time);
         this.transform.LookAt(firing_vector);
         transform.Rotate(Random.Range(-off_angle, off_angle), Random.Range(-off_angle, off_angle), Random.Range(-off_angle, off_angle));
 
