@@ -6,6 +6,7 @@ public class NewSquadButtonScript : MonoBehaviour {
 
     public GameObject SquadUIPrefab;
     public GameObject game_setup;
+    public GameObject squads_list;
     public int squad_count = 1;
 
 
@@ -20,6 +21,11 @@ public class NewSquadButtonScript : MonoBehaviour {
         game_setup.GetComponent<TeamSetupScript>().squads[squad_count] = squad;
         game_setup.GetComponent<TeamSetupScript>().UpdateCost();
         if (squad_count > 4) this.GetComponent<RectTransform>().position = new Vector3(this.GetComponent<RectTransform>().localPosition.x + 300, this.GetComponent<RectTransform>().localPosition.y, -.1f);
+
+    }
+
+    public void GetSquadList()
+    {
 
     }
 }

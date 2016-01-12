@@ -378,7 +378,6 @@ public class MovementDialObejctiveScript : MonoBehaviour {
                     transfer.early_directive.directive_type == DIR.directive_type &&
                     transfer.early_directive.leash == DIR.leash)
                 {
-                    asker = null;
                     quarter = 0;
                     transfer.UpdateController();
                     Destroy(this.gameObject);
@@ -390,7 +389,6 @@ public class MovementDialObejctiveScript : MonoBehaviour {
                    transfer.middle_directive.directive_type == DIR.directive_type &&
                    transfer.middle_directive.leash == DIR.leash)
                 {
-                    asker = null;
                     quarter = 0;
                     transfer.UpdateController();
                     Destroy(this.gameObject);
@@ -402,7 +400,6 @@ public class MovementDialObejctiveScript : MonoBehaviour {
                     transfer.late_directive.directive_type == DIR.directive_type &&
                     transfer.late_directive.leash == DIR.leash)
                 {
-                    asker = null;
                     quarter = 0;
                     transfer.UpdateController();
                     Destroy(this.gameObject);
@@ -414,7 +411,6 @@ public class MovementDialObejctiveScript : MonoBehaviour {
                     transfer.end_directive.directive_type == DIR.directive_type &&
                     transfer.end_directive.leash == DIR.leash)
                 {
-                    asker = null;
                     quarter = 0;
                     transfer.UpdateController();
                     Destroy(this.gameObject);

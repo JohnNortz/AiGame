@@ -26,7 +26,7 @@ public class CameraScript : MonoBehaviour {
     float ySpeed = 175.0F;
     int yMinLimit = -80; //Lowest vertical angle in respect with the target.
     int yMaxLimit = 80;
-    float minDistance = .1f; //Min distance of the camera from the target
+    float minDistance = .05f; //Min distance of the camera from the target
     int maxDistance = 30;
     private float x = 0.0F;
     private float y = 0.0F;
@@ -34,12 +34,13 @@ public class CameraScript : MonoBehaviour {
     public float waitTime;
     public Canvas canvas;
     public GameObject Target;
+    private GameObject _center;
     public bool free = false;
     public bool locked = false;
     
     // Use this for initialization
 	void Start () {
-
+        _center = Target;
         cameraMaxPos = PlayerPrefs.GetInt("mapSize");
         
         StoredAngle = transform.rotation;
@@ -53,7 +54,7 @@ public class CameraScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Target == null) Target = GameObject.FindGameObjectWithTag("Ship");
+        if (Target == null) Target = _center;
         if (Chase)
         {
             if (Target == null)

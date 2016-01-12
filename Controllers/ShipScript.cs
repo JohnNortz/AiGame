@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class ShipScript : MonoBehaviour {
+public class ShipScript : MonoBehaviour
+{
 
     public string order_directive = "search_and_destroy";
     public string directive = "search_and_destroy";
@@ -19,6 +20,7 @@ public class ShipScript : MonoBehaviour {
     public Vector3 grid;
     public Vector3 origin;
     public GameObject target_obj;
+    public ShipScript missile_launcher;
 
     public float leash_distance;
     public Vector3 heading;
@@ -58,6 +60,7 @@ public class ShipScript : MonoBehaviour {
     public SquadControlScript squad;
     private GameObject[] targets;
     public GameObject[] attacks;
+    public string[] mod_list;
     public GameObject[] mods;
     public GameObject[] extras;
     public GameObject[] Effects;
@@ -78,11 +81,15 @@ public class ShipScript : MonoBehaviour {
     public string ship_full_name;
 
     // Use this for initialization
-    void Start() {
+    void Start()
+    {
         orders = gameObject.AddComponent<Directive>() as Directive;
         scale = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameSetupScript>().scale;
-        if(this.name !=  "Missile") orders.grid = squad.early_directive.grid;
-        Debug.Log("orders: " + orders.grid);
+        if (this.name != "Missile") orders.grid = squad.early_directive.grid;
+        foreach (string mod in mod_list)
+        {
+            addMod(mod);
+        }
         _turn_speed = turn_speed;
         directive = order_directive;
         behavior_timer = 0;
@@ -96,7 +103,8 @@ public class ShipScript : MonoBehaviour {
         }
         foreach (GameObject extra in extras)
         {
-            switch (extra.name) {
+            switch (extra.name)
+            {
                 case "Ship_y_line":
                     var y = Instantiate(extra, this.transform.position, Quaternion.identity) as GameObject;
                     var yscript = y.GetComponent<ShipYCircleScript>();
@@ -133,8 +141,37 @@ public class ShipScript : MonoBehaviour {
         }
     }
 
+    public void addMod(string mod)
+    {
+        switch (mod)
+        {
+            case "cluster_rockets":
+                break;
+            case "heavy_rockets":
+                break;
+            case "hellfire_rockets":
+                break;
+            case "small_cannon":
+                break;
+            case "heavy_cannon":
+                break;
+            case "extra_munitions":
+                break;
+            case "engine_upgrade":
+                move_speed = move_speed + (move_speed * .15f);
+                break;
+            case "thruster_upgrade":
+                _turn_speed = turn_speed + (turn_speed * .2f);
+                break;
+            case "hull_upgrade":
+                hit_points += 10;
+                break;
+        }
+    }
+
     // Update is called once per frame
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
         grid = new Vector3((Mathf.Floor(transform.position.x / scale)), (transform.position.y / scale), (Mathf.Floor(transform.position.z / scale)));
 
         distance_to_target = Vector3.Distance(transform.position, target_vector);
@@ -174,9 +211,11 @@ public class ShipScript : MonoBehaviour {
                 break;
 
             case "defensive":
-                target_vector = order_vector;
-                if (distance_to_target < 2.25) target_vector = this.transform.position + transform.forward + (transform.right * Mathf.Sin(1.5f + behavior_timer));
-                speed -= .04f;
+                heading_vector = order_vector;
+                if (distance_to_target < 2.25)
+                {
+                    target_vector = this.transform.position + transform.forward + (transform.right * Mathf.Sin(1.5f + behavior_timer));
+                }
                 break;
 
             case "search_and_destroy":
@@ -185,22 +224,22 @@ public class ShipScript : MonoBehaviour {
                 else turn_speed = _turn_speed;
                 if (Vector3.Distance(target_vector, order_vector) < leash_distance) heading_vector = target_vector;
                 break;
-                
+
             case "rendevous":
                 heading_vector = order_vector;
-                if (distance_to_order < .2)
+                if (distance_to_order < .1)
                 {
-                    turn_speed = 0;
-                    move_speed = 0;
+                    turn_speed = 10;
                 }
-                 
+
                 break;
 
             case "missile":
                 if (target_obj == null)
                 {
                     heading_vector = this.transform.position + this.transform.forward;
-                } else
+                }
+                else
                 {
                     heading_vector = target_vector;
                 }
@@ -230,11 +269,11 @@ public class ShipScript : MonoBehaviour {
             dodge_ready = true;
         }
         if (distance_to_target > 2 && !dead && this.name != "Capital_1") speed += .15f;
-        if (distance_to_target < .8 && !dead) speed -= (speed * .15f);
-        if (distance_to_target < .4) BehaviorSwitch("dodge");
+        if (distance_to_target < .8 && !dead) speed = (speed * .75f);
+        //if (distance_to_target < .4) BehaviorSwitch("dodge");
 
         if ((speed - speed_real) > .01f) speed_real += accel * Time.deltaTime;
-        if ((speed - speed_real) < -.01f)  speed_real -= accel * Time.deltaTime;
+        if ((speed - speed_real) < -.01f) speed_real -= accel * Time.deltaTime;
 
         transform.Translate(Vector3.forward * speed_real * Time.deltaTime);
         var rotate = Quaternion.LookRotation(heading_vector - transform.position);
@@ -250,7 +289,7 @@ public class ShipScript : MonoBehaviour {
         //Debug.DrawLine(this.transform.position, (grid * 3 + new Vector3(1.5f, 0, 1.5f)), white);
         Debug.DrawLine(this.transform.position, heading_vector, Color.yellow);
         Debug.DrawLine(this.transform.position, order_vector, Color.blue);
-        if (target_obj != null )Debug.DrawLine(this.transform.position, target_obj.transform.position, Color.red);
+        if (target_obj != null) Debug.DrawLine(this.transform.position, target_obj.transform.position, Color.red);
 
 
         //Debug.DrawLine((origin * 3) + (Vector3.up * .3f) + new Vector3(1.5f, 0, 1.5f), (origin * 3) + new Vector3(1.5f, 0, 1.5f) - (Vector3.up * .3f), Color.white);
@@ -313,6 +352,7 @@ public class ShipScript : MonoBehaviour {
                 break;
 
             case "defensive":
+                heading_vector = order_vector;
                 behavior_timer = behavior_time_defensive;
                 leash_distance = 1 * scale;
                 break;
@@ -332,6 +372,7 @@ public class ShipScript : MonoBehaviour {
                 break;
 
             case "rendevous":
+                heading_vector = order_vector;
                 break;
 
             case "missile":
@@ -360,14 +401,15 @@ public class ShipScript : MonoBehaviour {
                     targets[_count] = ship;
                     _count++;
                 }
-            }else if (ship.GetComponent<TargetLocationScript>() != null && ship.GetComponent<TargetLocationScript>().team != team)
+            }
+            else if (ship.GetComponent<TargetLocationScript>() != null && ship.GetComponent<TargetLocationScript>().team != team)
             {
                 if (ship != null && Vector3.Distance(transform.position, ship.transform.position) < sight_range * scale)
                 {
                     targets[_count] = ship;
                     _count++;
                 }
-            } 
+            }
         }
         target_obj = null;
         var dis = sight_range * scale;
@@ -415,16 +457,16 @@ public class ShipScript : MonoBehaviour {
         }
     }
 
-    public void TakeDamage(int hit_ammount, int _team)
+    public void TakeDamage(int hit_ammount, ShipScript _batter)
     {
         if (armored != 0) hit_ammount -= armored;
         if (hit_ammount < 0) hit_ammount = 0;
         hit_points = hit_points - hit_ammount;
         target_obj = null;
-        if (hit_points <= 0)
+        if (hit_points <= 0 && this.tag != "Dead")
         {
-            speed_real = speed_real * .5f;
-            Kill();
+            speed_real = speed_real * .65f;
+            Kill(_batter.gameObject);
         }
         if (hit_points <= (_hit_points * .6f) && DamageEffects.Length >= 1 && DamageEffects[0] != null)
         {
@@ -438,7 +480,7 @@ public class ShipScript : MonoBehaviour {
 
     public void Ram()
     {
-        target_obj.GetComponent<ShipScript>().TakeDamage(ram_damage, team);
+        target_obj.GetComponent<ShipScript>().TakeDamage(ram_damage, missile_launcher);
         Kill();
     }
 
@@ -446,7 +488,7 @@ public class ShipScript : MonoBehaviour {
     {
         if (directive == "missile" && behavior_timer < -1 && other.tag == "Ship" && other.GetComponent<ShipScript>().team != team)
         {
-            other.transform.GetComponent<ShipScript>().TakeDamage(ram_damage, team);
+            other.transform.GetComponent<ShipScript>().TakeDamage(ram_damage, missile_launcher);
             Kill();
         }
     }
@@ -486,5 +528,24 @@ public class ShipScript : MonoBehaviour {
             squad.UpdateScore();
         }
     }
+    public void Kill(GameObject killer)
+    {
+        if (killer.GetComponent<ShipScript>() != null)
+        {
+            var ks = killer.GetComponent<ShipScript>().squad;
+            ks.squad_kills++;
+            ks.squad_points += squad.ship_worth;
+            if (killer == ks.ships[0])
+            {
+                ks.squad_leader_kills++;
+            }
 
+        }
+        squad.squad_deaths++;
+        if (this.gameObject == squad.ships[0])
+        {
+            squad.squad_leader_deaths++;
+        }
+        Kill();
+    }
 }

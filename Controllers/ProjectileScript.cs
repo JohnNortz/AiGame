@@ -33,6 +33,7 @@ public class ProjectileScript : MonoBehaviour {
             var missile_script = new_proj.GetComponent<ShipScript>();
             missile_script.target_obj = target;
             missile_script.team = parent_ship_script.team;
+            missile_script.missile_launcher = parent_ship_script;
             missile_script.ram_damage = damage;
             missile_script.order_directive = "missile";
             new_proj.name = "Missile";
@@ -64,7 +65,7 @@ public class ProjectileScript : MonoBehaviour {
     {
         if (other.gameObject.GetComponent<ShipScript>().team != parent_ship_script.team)
         {
-            other.gameObject.GetComponent<ShipScript>().TakeDamage(damage, parent_ship_script.team);
+            other.gameObject.GetComponent<ShipScript>().TakeDamage(damage, parent_ship_script);
             var explode = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
             Destroy(this.gameObject);
         }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class SquadSetupScript : MonoBehaviour {
@@ -6,13 +7,13 @@ public class SquadSetupScript : MonoBehaviour {
 
     public int team;
     public int squad_count;
+    public Squad saved_squad;
+    public string user_name;
 
     public GameObject Ship;
     public int ship_number;
     public Directive early_directive;
-    public Vector3 early_grid;
     public Directive middle_directive;
-    public Vector3 middle_grid;
     public Directive late_directive;
     public Directive end_directive;
     public Directive end_over_directive;
@@ -22,6 +23,19 @@ public class SquadSetupScript : MonoBehaviour {
     public GameObject squad_command_object;
     public SquadControlScript squad_s;
     public GameObject SquadSetupPanel;
+
+    public string[] mods;
+    public int mod_cost;
+
+    public Image ship_image;
+    public GameObject mini_ship_number_image;
+    public Image mini_ship_number_image_first;
+    public Text ship_full_name_text;
+    public Text hp_text;
+    public Text armor_text;
+    public Text speed_text;
+    public Text squad_cost_text;
+    public Text squad_name_text;
 
     public int per_ship_cost;
     public int squad_cost;
@@ -47,6 +61,11 @@ public class SquadSetupScript : MonoBehaviour {
         middle_directive = gameObject.AddComponent<Directive>() as Directive;
         early_directive = gameObject.AddComponent<Directive>() as Directive;
         late_directive = gameObject.AddComponent<Directive>() as Directive;
+        
+        if (squad_name == null)
+        {
+            click_setup();
+        }
     }
 	
 	// Update is called once per frame
@@ -76,9 +95,6 @@ public class SquadSetupScript : MonoBehaviour {
             Dial.GetComponent<RectTransform>().SetParent(this.transform.parent);
             Dial.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Dial.GetComponent<RectTransform>().localPosition = new Vector3(this.transform.localPosition.x, this.transform.localPosition.y - 150, this.transform.localPosition.z);
-
-            early_grid = early_directive.grid;
-            middle_grid = middle_directive.grid;
         }
         else if (Dial.GetComponent<MovementDialObejctiveScript>() != null)
         {
@@ -104,10 +120,9 @@ public class SquadSetupScript : MonoBehaviour {
             Dial.GetComponent<RectTransform>().SetParent(this.transform.parent);
             Dial.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Dial.GetComponent<RectTransform>().localPosition = new Vector3(this.transform.localPosition.x, this.transform.localPosition.y - 150, this.transform.localPosition.z);
-
-            early_grid = early_directive.grid;
-            middle_grid = middle_directive.grid;
+            
         }
+
 
     }
 
@@ -117,6 +132,34 @@ public class SquadSetupScript : MonoBehaviour {
         var SetUpScript = SetUp.GetComponent<SquadEditPanelScript>();
         SetUpScript.asker = this.gameObject;
 
+    }
+
+    public void Update_Squad()
+    {
+        if (Ship != null)
+        {
+            var s = Ship.GetComponent<ShipScript>();
+            for (int i = 2; i <= ship_number; i++)
+            {
+                var img = Instantiate(mini_ship_number_image, mini_ship_number_image_first.GetComponent<RectTransform>().localPosition, Quaternion.identity) as GameObject;
+                img.GetComponent<RectTransform>().parent = this.transform;
+                var pos = mini_ship_number_image_first.GetComponent<RectTransform>().localPosition;
+                pos.x = pos.x + (15 * i);
+                img.GetComponent<RectTransform>().localPosition = pos;
+            } 
+            ship_image.sprite = s.ship_image;
+            squad_name_text.text = squad_name;
+            ship_full_name_text.text = s.ship_full_name;
+            hp_text.text = s.hit_points.ToString();
+            armor_text.text = s.armored.ToString();
+            speed_text.text = s.move_speed.ToString();
+            squad_cost_text.text = squad_cost.ToString();
+        }
+    }
+
+    public void create_squad()
+    {
+        saved_squad = new Squad(name, squad_leader_name, user_name, Ship.GetComponent<ShipScript>().type, ship_number, mod_cost, mods);
     }
 
     public void UpdateController()
@@ -149,6 +192,7 @@ public class SquadSetupScript : MonoBehaviour {
         squad_s.squad_count = squad_count;
 
         squad_s.ship_worth = per_ship_cost;
+
         Debug.Log("Finished Updating Controller");
     }
 }

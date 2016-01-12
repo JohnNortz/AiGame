@@ -26,6 +26,14 @@ public class SquadControlScript : MonoBehaviour {
     public int squad_count;
     public int ship_worth;
 
+    public int squad_kills;
+    public int squad_deaths;
+    public int squad_leader_kills;
+    public int squad_leader_deaths;
+    public int squad_points;
+    public int games_played;
+    public int games_won;
+
     public float warpTimer;
     public float[] warpTimes;
     private float[] warpTimesOriginal;
@@ -96,7 +104,7 @@ public class SquadControlScript : MonoBehaviour {
     public void ControllerReset()
     {
         Debug.Log("???????????????????????????????????");
-        quarter = 0;
+        quarter = 1;
         warpTimer = 0;
         warp_count = 0;
         warpTimes = warpTimesOriginal;
@@ -170,7 +178,6 @@ public class SquadControlScript : MonoBehaviour {
 
     public void UpdateDirectives()
     {
-        quarter++;
         Debug.Log("Controller Says: Directives Changeing");
         switch (quarter)
         {

@@ -45,11 +45,11 @@ public class UIScoreHeaderScript : MonoBehaviour {
                     {
                         if (team == 1)
                         {
-                            team_0_numbers += 1;
+                            team_1_numbers += 1;
                         }
                         if (team == 0)
                         {
-                            team_1_numbers += 1;
+                            team_0_numbers += 1;
                         }
                     }
                 }
